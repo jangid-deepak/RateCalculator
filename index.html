@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foam Corner Price Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #555;
+            font-weight: bold;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .row input {
+            width: 48%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input:focus, select:focus {
+            border-color: #007BFF;
+            outline: none;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .top-dimensions {
+            display: none;
+        }
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .output {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .output div {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Foam Corner Price Calculator</h1>
+    <form id="priceForm">
+        <!-- Side 1 Section -->
+        <div class="section">
+            <h2>Side 1 Dimensions</h2>
+            <div class="row">
+                <input type="number" id="side1Width" placeholder="Width (mm)" required>
+                <input type="number" id="side1Height" placeholder="Height (mm)" required>
+            </div>
+        </div>
+
+        <!-- Side 2 Section -->
+        <div class="section">
+            <h2>Side 2 Dimensions</h2>
+            <div class="row">
+                <input type="number" id="side2Width" placeholder="Width (mm)" required>
+                <input type="number" id="side2Height" placeholder="Height (mm)" required>
+            </div>
+        </div>
+
+        <!-- Side 3 Section -->
+        <div class="section">
+            <h2>Side 3 Dimensions</h2>
+            <div class="row">
+                <input type="number" id="side3Width" placeholder="Width (mm)" required>
+                <input type="number" id="side3Height" placeholder="Height (mm)" required>
+            </div>
+        </div>
+
+        <!-- Top Section -->
+        <label>
+            <input type="checkbox" id="includeTop" onclick="toggleTopDimensions()"> Include Top
+        </label>
+        <div class="top-dimensions section" id="topDimensions">
+            <h2>Top Dimensions</h2>
+            <div class="row">
+                <input type="number" id="topWidth" placeholder="Width (mm)">
+                <input type="number" id="topHeight" placeholder="Height (mm)">
+            </div>
+        </div>
+
+        <!-- Additional Inputs -->
+        <div class="section">
+            <label for="width">Select Foam Width (mm):</label>
+            <select id="width" name="width" required>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="40">40</option>
+            </select>
+
+            <label for="formRate">Foam Rate (₹/unit):</label>
+            <input type="number" id="formRate" placeholder="e.g., 5.1" step="0.1" required>
+
+            <label for="profileMargin">Profile Margin (%):</label>
+            <input type="number" id="profileMargin" placeholder="e.g., 20" step="0.1" required>
+        </div>
+
+        <!-- Calculate Button -->
+        <button type="button" onclick="calculatePrice()">Calculate Price</button>
+    </form>
+
+    <div class="output">
+        <div id="result"></div>
+        <div id="cost"></div>
+        <div id="profit"></div>
+        <div id="totalCost"></div>
+    </div>
+
+    <script>
+        function toggleTopDimensions() {
+            const includeTop = document.getElementById("includeTop").checked;
+            const topDimensions = document.getElementById("topDimensions");
+            topDimensions.style.display = includeTop ? "block" : "none";
+        }
+
+        function calculatePrice() {
+            const side1Width = parseFloat(document.getElementById("side1Width").value);
+            const side1Height = parseFloat(document.getElementById("side1Height").value);
+            const side2Width = parseFloat(document.getElementById("side2Width").value);
+            const side2Height = parseFloat(document.getElementById("side2Height").value);
+            const side3Width = parseFloat(document.getElementById("side3Width").value);
+            const side3Height = parseFloat(document.getElementById("side3Height").value);
+            const includeTop = document.getElementById("includeTop").checked;
+            const width = parseFloat(document.getElementById("width").value);
+            const formRate = parseFloat(document.getElementById("formRate").value);
+            const profileMargin = parseFloat(document.getElementById("profileMargin").value);
+
+            let topWidth = 0;
+            let topHeight = 0;
+
+            if (includeTop) {
+                topWidth = parseFloat(document.getElementById("topWidth").value) || 0;
+                topHeight = parseFloat(document.getElementById("topHeight").value) || 0;
+
+                if (topWidth <= 0 || topHeight <= 0) {
+                    alert("Please enter valid dimensions for the top.");
+                    return;
+                }
+            }
+
+            // Validate input
+            if (isNaN(side1Width) || isNaN(side1Height) || 
+                isNaN(side2Width) || isNaN(side2Height) || 
+                isNaN(side3Width) || isNaN(side3Height) || 
+                isNaN(formRate) || isNaN(profileMargin)) {
+                alert("Please enter valid values for all fields.");
+                return;
+            }
+
+            // Calculate areas
+            const side1Area = side1Width * side1Height;
+            const side2Area = side2Width * side2Height;
+            const side3Area = side3Width * side3Height;
+            const topArea = includeTop ? topWidth * topHeight : 0;
+
+            // Calculate total area
+            const totalArea = side1Area + side2Area + side3Area + topArea;
+
+            // Calculate cost, profit, and total cost
+            const cost = ((totalArea / 1400000) * width * formRate).toFixed(2);
+            const profit = ((cost * profileMargin) / 100).toFixed(2);
+            const totalCost = (parseFloat(cost) + parseFloat(profit)).toFixed(2);
+
+            // Display results
+            document.getElementById("result").innerText = `Total Price (Cost + Profit): ₹${totalCost}`;
+            document.getElementById("cost").innerText = `Cost: ₹${cost}`;
+            document.getElementById("profit").innerText = `Profit: ₹${profit}`;
+            document.getElementById("totalCost").innerText = `Total Cost: ₹${totalCost}`;
+        }
+    </script>
+</body>
+</html>
