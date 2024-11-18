@@ -218,7 +218,7 @@
             const totalArea = side1Area + side2Area + side3Area + topArea;
 
             // Calculate cost, profit, and total cost
-            const cost = ((totalArea / 1400000) * width * formRate).toFixed(2);
+            const cost = ((1400000/totalArea) * width * formRate).toFixed(2);
             const profit = ((cost * profileMargin) / 100).toFixed(2);
             const totalCost = (parseFloat(cost) + parseFloat(profit)).toFixed(2);
 
